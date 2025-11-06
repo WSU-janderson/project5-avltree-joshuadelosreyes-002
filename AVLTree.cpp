@@ -12,12 +12,12 @@ size_t AVLTree::AVLNode::getHeight() const {
 	return 0;
 }
 
-bool AVLTree::removeNode(AVLNode*& current) {
+bool AVLTree::removeNode(AVLNode *&current) {
 	if (!current) {
 		return false;
 	}
 
-	AVLNode* toDelete = current;
+	AVLNode *toDelete = current;
 	size_t nChildren = current->numChildren();
 	if (current->isLeaf()) {
 		/** Case 1: We can delete the node. */ 
@@ -33,7 +33,7 @@ bool AVLTree::removeNode(AVLNode*& current) {
 		/** Case 3: We have two children.
 		 *	Get smallest key in right subtree by
 		 *	getting right child and go left until left is null. */
-		AVLNode* smallestInRight = current->right;
+		AVLNode *smallestInRight = current->right;
 
 		/** I could check if smallestInRight is null,
 		 *	but it shouldn't be since the node has two children. */

@@ -6,6 +6,9 @@
 #define AVLTREE_H
 
 #include <string>
+#include <optional>
+#include <vector>
+#include <ostream>
 
 class AVLTree {
 	public:
@@ -19,8 +22,8 @@ class AVLTree {
 				ValueType value;
 				size_t height;
 
-				AVLNode* left;
-				AVLNode* right;
+				AVLNode *left;
+				AVLNode *right;
 
 				/** Must return `0`, `1`, or `2`. */
 				size_t numChildren() const;
@@ -33,22 +36,40 @@ class AVLTree {
 		};
 
 	public:
+		AVLTree();
+		AVLTree(const AVLTree &other);
+		~AVLTree();
+		void operator=(const AVLTree &other);
 
+		bool insert(const KeyType &key, ValueType value);
+		bool remove(const KeyType &key);
+		bool contains(const KeyType &key) const;
 
+		std::optional<ValueType> get(const KeyType &key) const;
+		ValueType & operator[](const KeyType &key);
+
+		std::vector<KeyType> findRange(const KeyType &low, const KeyType &high) const;
+		std::vector<KeyType> keys() const;
+
+		size_t size() const;
+		size_t getHeight() const;
+
+		friend std::ostream & operator<<(std::ostream &os, const AVLTree &avlTree);
 
 	private:
-		AVLNode* root;
+		AVLNode *root;
+		size_t length;
 
 		/* Helper methods for remove. */
 
 		/** This overloaded remove will do the recursion to remove the node. */
-		bool remove(AVLNode*& current, KeyType key);
+		bool remove(AVLNode *&current, KeyType key);
 
-		/** `removeNode` contains the logic for actually removing a node based on the numebr of children. */
-		bool removeNode(AVLNode*& current);
+		/** `removeNode` contains the logic for actually removing a node based on the number of children. */
+		bool removeNode(AVLNode *&current);
 
 		/** You will implement this, but it is needed for `removeNode()`. */
-		void balanceNode(AVLNode*& node);
+		void balanceNode(AVLNode *&node);
 };
 
 #endif // AVLTREE_H
