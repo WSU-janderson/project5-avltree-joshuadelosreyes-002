@@ -25,6 +25,8 @@ class AVLTree {
 				AVLNode *left;
 				AVLNode *right;
 
+				AVLNode(KeyType &key, ValueType &value);
+
 				/** Must return `0`, `1`, or `2`. */
 				size_t numChildren() const;
 
@@ -48,8 +50,8 @@ class AVLTree {
 		std::optional<ValueType> get(const KeyType &key) const;
 		ValueType & operator[](const KeyType &key);
 
-		std::vector<KeyType> findRange(const KeyType &low, const KeyType &high) const;
 		std::vector<KeyType> keys() const;
+		std::vector<ValueType> findRange(const KeyType &low, const KeyType &high) const;
 
 		size_t size() const;
 		size_t getHeight() const;

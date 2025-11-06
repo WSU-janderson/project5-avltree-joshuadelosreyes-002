@@ -1,15 +1,24 @@
 #include "AVLTree.h"
 
 size_t AVLTree::AVLNode::numChildren() const {
-	return 0;
+	size_t count = 0;
+	if (this->left) {++count;}
+	if (this->right) {++count;}
+	return count;
 }
 
 bool AVLTree::AVLNode::isLeaf() const {
-	return false;
+	return this->numChildren() == 0;
+}
+
+size_t max(size_t a, size_t b) {
+	return (a < b) ? b : a;
 }
 
 size_t AVLTree::AVLNode::getHeight() const {
-	return 0;
+	size_t lh = this->left ? this->left->height : -1;
+	size_t rh = this->right ? this->right->height : -1;
+	return max(lh + 1, rh + 1);
 }
 
 bool AVLTree::removeNode(AVLNode *&current) {
@@ -66,3 +75,5 @@ bool AVLTree::remove(AVLNode *&current, KeyType key) {
 void AVLTree::balanceNode(AVLNode *&node) {
 
 }
+
+
