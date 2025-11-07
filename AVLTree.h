@@ -25,7 +25,7 @@ class AVLTree {
 				AVLNode *left;
 				AVLNode *right;
 
-				AVLNode(KeyType &key, ValueType &value);
+				AVLNode(const KeyType &key, const ValueType &value);
 
 				/** Must return `0`, `1`, or `2`. */
 				size_t numChildren() const;
@@ -61,6 +61,11 @@ class AVLTree {
 	private:
 		AVLNode *root;
 		size_t length;
+
+		/* Recursive overloads for the methods declared above. */
+
+		bool insert(AVLNode *current, const KeyType &key, ValueType &value);
+		bool contains(AVLNode *current, const KeyType &key) const;
 
 		/* Helper methods for remove. */
 
