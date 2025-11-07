@@ -65,7 +65,10 @@ class AVLTree {
 		/* Recursive overloads for the methods declared above. */
 
 		bool insert(AVLNode *current, const KeyType &key, ValueType &value);
-		bool contains(AVLNode *current, const KeyType &key) const;
+		bool contains(const AVLNode *current, const KeyType &key) const;
+
+		std::optional<ValueType> get(const AVLNode *current, const KeyType &key) const;
+		ValueType & getValue(AVLNode *current, const KeyType &key);
 
 		/* Helper methods for remove. */
 

@@ -130,7 +130,7 @@ bool AVLTree::contains(const KeyType &key) const {
  *	Recursive helper method in the perspective of a node.
  *	It should return `false` once the node becomes `null`.
  */
-bool AVLTree::contains(AVLNode *current, const KeyType &key) const {
+bool AVLTree::contains(const AVLNode *current, const KeyType &key) const {
 	if (current) {
 		if (current->key < key) {
 			return this->contains(current->left, key);
@@ -251,4 +251,63 @@ std::ostream & operator<<(std::ostream &os, const AVLTree::AVLNode *node) {
 std::ostream & operator<<(std::ostream &os, const AVLTree &avlTree) {
 	AVLTree::printDepth(os, avlTree.root, 0);
 	return os;
+}
+
+/**
+ *	Returns the value associated with the specified `key` if it exists.
+ *	Otherwise, if that key doesn't exist in the tree, `std::nullopt` is returned.
+ *
+ *	Expected time complexity is `O(log(n))`.
+ */
+std::optional<AVLTree::ValueType> AVLTree::get(const KeyType &key) const {
+	return this->get(this->root, key);
+}
+
+/**
+ *	Recursive helper to traverse the nodes of the tree to get to the matching key,
+ *	similar to `contains()`.
+ */
+std::optional<AVLTree::ValueType> AVLTree::get(const AVLNode *current, const KeyType &key) const {
+	if (current) {
+		if (current->key < key) {
+			return this->get(current->left, key);
+		} else if (current->key > key) {
+			return this->get(current->right, key);
+		} else {
+			return std::optional{current->value};
+		}
+	} else {
+		return std::nullopt;
+	}
+}
+
+/**
+ *	Returns the value associated with the specified `key`.
+ *	But the value of that key can also be updated.
+ *
+ *	This method may be ill-formed if a key does not exist.
+ *
+ *	Expected time complexity is `O(log(n))`.
+ */
+AVLTree::ValueType & AVLTree::operator[](const KeyType &key) {
+	return this->getValue(this->root, key);
+}
+
+/**
+ *	Recursive helper to traverse the nodes of the tree to get a reference holding
+ *	the value corresponding to a matching `key`.
+ *
+ *	A missing key caused by a null node not returning anything may cause undesired behavior.
+ */
+AVLTree::ValueType & AVLTree::getValue(AVLNode *current, const KeyType &key) {
+	if (current) {
+		if (current->key < key) {
+			return this->getValue(current->left, key);
+		} else if (current->key > key) {
+			return this->getValue(current->right, key);
+		} else {
+			ValueType &valueOf = current->value;
+			return valueOf;
+		}
+	}
 }
