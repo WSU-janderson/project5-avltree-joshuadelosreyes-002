@@ -27,57 +27,84 @@ bool AVLTree::removeNode(AVLNode *&current) {
 	}
 
 	AVLNode *toDelete = current;
-	size_t nChildren = current->numChildren();
-	if (current->isLeaf()) {
+	switch (current->numChildren()) {
 		/** Case 1: We can delete the node. */ 
-		current = nullptr;
-	} else if (current->numChildren() == 1) {
-		/** Case 2: Replace current with its only child. */
-		if (current->right) {
-			current = current->right;
-		} else {
-			current = current->left;
+		case 0: {
+			current = nullptr;
+			break;
 		}
-	} else {
+
+		/** Case 2: Replace current with its only child. */
+		case 1: {
+			if (current->right) {
+				current = current->right;
+			} else {
+				current = current->left;
+			}
+			break;
+		}
+
 		/** Case 3: We have two children.
 		 *	Get smallest key in right subtree by
 		 *	getting right child and go left until left is null. */
-		AVLNode *smallestInRight = current->right;
+		case 2: {
+			AVLNode *minRight = current->right;
 
-		/** I could check if smallestInRight is null,
-		 *	but it shouldn't be since the node has two children. */
-		while (smallestInRight->left) {
-			smallestInRight = smallestInRight->left;
+			/** I could check if smallestInRight is null,
+			 *	but it shouldn't be since the node has two children. */
+			while (minRight->left) {
+				minRight = minRight->left;
+			}
+
+			KeyType newKey = minRight->key;
+			ValueType newValue = minRight->value;
+			bool nodeRemoved = this->remove(this->root, newKey); // Delete this one.
+
+			current->key = newKey;
+			current->value = newValue;
+
+			current->height = current->getHeight();
+			this->balanceNode(current);
+
+			return nodeRemoved;
 		}
-
-		std::string newKey = smallestInRight->key;
-		int newValue = smallestInRight->value;
-		remove(root, smallestInRight->key); // Delete this one.
-
-		current->key = newKey;
-		current->value = newValue;
-
-		current->height = current->getHeight();
-		balanceNode(current);
-
-		return true; // We already deleted the one we needed to so return.
 	}
 
 	delete toDelete;
-
 	return true;
 }
 
+bool AVLTree::remove(const KeyType &key) {
+	bool nodeRemoved = this->remove(this->root, key);
+	if (nodeRemoved) {--this->length;}
+	return nodeRemoved;
+}
+
 bool AVLTree::remove(AVLNode *&current, KeyType key) {
-	return false;
+	if (current) {
+		if (current->key < key) {
+			return this->remove(current->left, key);
+		} else if (current->key > key) {
+			return this->remove(current->right, key);
+		} else {
+			return this->removeNode(current);
+		}
+	} else {
+		return false;
+	}
 }
 
 void AVLTree::balanceNode(AVLNode *&node) {
 
 }
 
+/** Creates an empty AVL tree. */
 AVLTree::AVLTree() : root(nullptr), length(0) {}
 
+/**
+ *	Creates a node, loaded with a key-value pair.
+ *	New nodes are allocated as leaf nodes, which they have no children.
+ */
 AVLTree::AVLNode::AVLNode(const KeyType &key, const ValueType &value) : 
 	key(key), value(value),
 	left(nullptr), right(nullptr), height(0) {}
@@ -105,13 +132,12 @@ bool AVLTree::contains(const KeyType &key) const {
  */
 bool AVLTree::contains(AVLNode *current, const KeyType &key) const {
 	if (current) {
-		if (current->key == key) {return true;}
-		else {
-			if (current->key < key) {
-				return this->contains(current->left, key);
-			} else {
-				return this->contains(current->right, key);
-			}
+		if (current->key < key) {
+			return this->contains(current->left, key);
+		} else if (current->key > key) {
+			return this->contains(current->right, key);
+		} else {
+			return true;
 		}
 	} else {
 		return false;
