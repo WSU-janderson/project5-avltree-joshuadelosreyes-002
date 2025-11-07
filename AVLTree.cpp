@@ -213,6 +213,18 @@ bool AVLTree::insert(AVLNode *current, const KeyType &key, ValueType &value) {
 }
 
 /**
+ *	Returns the height of the tree.
+ *	If the tree is empty, its height is `-1`.
+ */
+size_t AVLTree::getHeight() const {
+	if (this->root) {
+		return this->root->height;
+	} else {
+		return -1;
+	}
+}
+
+/**
  *	Recursive helper to traverse the nodes of the tree at the proper depth.
  *	This uses the right child first in-order traversal in the tree.
  */
