@@ -211,3 +211,32 @@ bool AVLTree::insert(AVLNode *current, const KeyType &key, ValueType &value) {
 		}
 	}
 }
+
+/**
+ *	Recursive helper to traverse the nodes of the tree at the proper depth.
+ *	This uses the right child first in-order traversal in the tree.
+ */
+void AVLTree::printDepth(std::ostream &os, const AVLNode *node, const size_t depth) {
+	if (node) {
+		AVLTree::printDepth(os, node->right, depth + 1);
+		os << std::string(2 * depth, ' ') << node << "\n";
+		AVLTree::printDepth(os, node->left, depth + 1);
+	}
+	return;
+}
+
+/**
+ *	Prints an individual node represented by `{<key>: <value>}`.
+ */
+std::ostream & operator<<(std::ostream &os, const AVLTree::AVLNode *node) {
+	os << "{" << node->key << ": " << node->value << "}";
+	return os;
+}
+
+/**
+ *	Prints every node in the tree that resembles the tree's structure.
+ */
+std::ostream & operator<<(std::ostream &os, const AVLTree &avlTree) {
+	AVLTree::printDepth(os, avlTree.root, 0);
+	return os;
+}
