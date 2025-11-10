@@ -311,3 +311,26 @@ AVLTree::ValueType & AVLTree::getValue(AVLNode *current, const KeyType &key) {
 		}
 	}
 }
+
+/**
+ *	Returns a vector containing all the keys in the tree.
+ *	The vector has the same size as the tree's size.
+ */
+std::vector<AVLTree::KeyType> AVLTree::keys() const {
+	std::vector<KeyType> keyList;
+	this->grabKey(keyList, this->root);
+	return keyList;
+}
+
+/**
+ *	Recursive helper to traverse the nodes of the tree to grab a key from a node
+ *	and insert that key in a vector called the key list.
+ */
+void AVLTree::grabKey(std::vector<AVLTree::KeyType> &keyList, const AVLNode *current) const {
+	if (current) {
+		this->grabKey(keyList, current->left);
+		keyList.push_back(current->key);
+		this->grabKey(keyList, current->right);
+	}
+	return;
+}

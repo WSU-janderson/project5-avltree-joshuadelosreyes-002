@@ -70,6 +70,8 @@ class AVLTree {
 		std::optional<ValueType> get(const AVLNode *current, const KeyType &key) const;
 		ValueType & getValue(AVLNode *current, const KeyType &key);
 
+		void grabKey(std::vector<KeyType> &keyList, const AVLNode *current) const;
+
 		/* Helper methods for remove. */
 
 		/** This overloaded remove will do the recursion to remove the node. */
