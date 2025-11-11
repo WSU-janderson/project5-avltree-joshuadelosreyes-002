@@ -334,3 +334,52 @@ void AVLTree::grabKey(std::vector<AVLTree::KeyType> &keyList, const AVLNode *cur
 	}
 	return;
 }
+
+/**
+ *	Returns a vector of all unique values that correspond to the keys that are in a range
+ *	bounded by `low` and `high`.
+ */
+std::vector<AVLTree::ValueType> AVLTree::findRange(const KeyType &low, const KeyType &high) const {
+	std::vector<ValueType> valueList;
+	this->grabValue(valueList, this->root, low, high);
+	return valueList;
+}
+
+/**
+ *	Because the values in the list is not expected to be sorted, searching for an element in a vector
+ *	is processed linearly. If such value exists, it won't be inserted in that vector.
+ */
+void insertValue(std::vector<AVLTree::ValueType> &valueList, const AVLTree::ValueType &value) {
+	bool isUnique = true;
+	for (size_t i = 0; (i < valueList.size()) && isUnique; ++i) {
+		isUnique &= valueList[i] != value;
+	}
+	if (isUnique) {valueList.push_back(value);}
+}
+
+/**
+ *	Recursive helper to traverse the nodes of the tree to grab a value from a node
+ *	and insert that value in a vector if it doesn't exist, given the key is in the
+ *	specified bounds.
+ *
+ *	Check if such child exists in order to compare that key to the bounds.
+ */
+void AVLTree::grabValue(
+	std::vector<AVLTree::ValueType> &valueList, const AVLNode *current,
+	const KeyType &low, const KeyType &high
+) const {
+	if (current) {
+		if (current->left) {
+			if (current->left->key >= low) {
+				this->grabValue(valueList, current->left, low, high);
+			}
+		}
+		insertValue(valueList, current->value);
+		if (current->right) {
+			if (current->right->key <= high) {
+				this->grabValue(valueList, current->right, low, high);
+			}
+		}
+	}
+	return;
+}

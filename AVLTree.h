@@ -71,6 +71,7 @@ class AVLTree {
 		ValueType & getValue(AVLNode *current, const KeyType &key);
 
 		void grabKey(std::vector<KeyType> &keyList, const AVLNode *current) const;
+		void grabValue(std::vector<ValueType> &valueList, const AVLNode *current, const KeyType &low, const KeyType &high) const;
 
 		/* Helper methods for remove. */
 
