@@ -16,6 +16,34 @@ class AVLTree {
 		using ValueType = size_t;
 
 	protected:
+
+		/**
+		 *	Rebalancing nodes, in particular, rotations, may require a parent node
+		 *	to change one of the child node pointers. This occurs if a successful
+		 *	insertion and deletion occured and the absolute value of the height
+		 *	balance is greater than `1`.
+		 */
+		enum class Direction : ssize_t {
+
+			/**
+			 *	A successful insertion or deletion occurred on the left child;
+			 *	or a node is unbalanced to the left.
+			 */
+			LEFT = 1,
+
+			/**
+			 *	This resultant child direction only exists at the root node pointer;
+			 *	or a node has equal heights of each child.
+			 */
+			NONE = 0,
+
+			/**
+			 *	A successful insertion or deletion occurred on the right child;
+			 *	or a node is unbalanced to the right.
+			 */
+			RIGHT = -1,
+		};
+
 		class AVLNode {
 			public:
 				KeyType key;
@@ -35,6 +63,12 @@ class AVLTree {
 
 				/** Number of hops to deepest leaf node. */
 				size_t getHeight() const;
+
+				/** The difference between the heights of this node's children. */
+				ssize_t getBalance() const;
+
+				void rotateLeft(const AVLTree::Direction &childDir);
+				void rotateRight(const AVLTree::Direction &childDir);
 		};
 
 	public:
@@ -81,11 +115,17 @@ class AVLTree {
 		/** `removeNode` contains the logic for actually removing a node based on the number of children. */
 		bool removeNode(AVLNode *&current);
 
-		/** You will implement this, but it is needed for `removeNode()`. */
-		void balanceNode(AVLNode *&node);
-
 		static void printDepth(std::ostream &os, const AVLNode *node, const size_t depth);
 		friend std::ostream & operator<<(std::ostream &os, const AVLNode *node);
+
+		void balanceNode(AVLNode *&node, Direction &childDir);
+
+		friend constexpr ssize_t operator<=>(const ssize_t x, const Direction y) {
+			return x - static_cast<ssize_t>(y);
+		}
+
+		void rotateLeft();
+		void rotateRight();
 };
 
 #endif // AVLTREE_H

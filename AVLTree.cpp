@@ -21,6 +21,12 @@ size_t AVLTree::AVLNode::getHeight() const {
 	return max(lh + 1, rh + 1);
 }
 
+ssize_t AVLTree::AVLNode::getBalance() const {
+	ssize_t lh = this->left ? this->left->height : -1;
+	ssize_t rh = this->right ? this->right->height : -1;
+	return lh - rh;
+}
+
 bool AVLTree::removeNode(AVLNode *&current) {
 	if (!current) {
 		return false;
@@ -64,7 +70,6 @@ bool AVLTree::removeNode(AVLNode *&current) {
 			current->value = newValue;
 
 			current->height = current->getHeight();
-			this->balanceNode(current);
 
 			return nodeRemoved;
 		}
@@ -94,7 +99,80 @@ bool AVLTree::remove(AVLNode *&current, KeyType key) {
 	}
 }
 
-void AVLTree::balanceNode(AVLNode *&node) {
+/**
+ *	Check the height balances of this `node`'s children, specified by direction.
+ *	If `node` is `nullptr`, this means the balancing will act on the root node.
+ *	The direction of the node's child should not be `NONE`.
+ *
+ *	Only one child can have a height balance whose absolute value is
+ *	greater than 1. If so, this node is the parent node of one of the
+ *	children whose height is greatly unbalanced.
+ */
+void AVLTree::balanceNode(AVLNode *&node, AVLTree::Direction &childDir) {
+	if (node) {node->height = node->getHeight();}
+	AVLNode *child = node ? (
+		(childDir == Direction::LEFT) ? node->left :
+		(childDir == Direction::RIGHT) ? node->right : (
+			!node->left ? node->right :
+			!node->right ? node->left : nullptr
+		)
+	) : this->root;
+
+	if (child) {
+		AVLNode *grandChild;
+
+		if (child->getBalance() > Direction::LEFT) {
+			grandChild = child->left;
+			if (grandChild->getBalance() < Direction::LEFT) {
+				child->rotateLeft(Direction::LEFT);
+			}
+			if (node) {node->rotateRight(Direction::LEFT);}
+			else {this->rotateRight();}
+		} else if (child->getBalance() < Direction::RIGHT) {
+			grandChild = child->right;
+			if (grandChild->getBalance() > Direction::RIGHT) {
+				child->rotateRight(Direction::RIGHT);
+			}
+			if (node) {node->rotateLeft(Direction::RIGHT);}
+			else {this->rotateLeft();}
+		}
+
+		if (grandChild) {grandChild->height = grandChild->getHeight();}
+		child->height = child->getHeight();
+		node->height = node->getHeight();
+		return;
+	}
+}
+
+/**
+ *	`this` node is the parent node.
+ *	One of this node's children specified by a direction
+ *	is rotated to the left.
+ */
+void AVLTree::AVLNode::rotateLeft(const AVLTree::Direction &childDir) {
+
+}
+
+/**
+ *	Rotate the root node to the left.
+ */
+void AVLTree::rotateLeft() {
+
+}
+
+/**
+ *	`this` node is the parent node.
+ *	One of this node's children specified by a direction
+ *	is rotated to the right.
+ */
+void AVLTree::AVLNode::rotateRight(const AVLTree::Direction &childDir) {
+
+}
+
+/**
+ *	Rotate the root node to the right.
+ */
+void AVLTree::rotateRight() {
 
 }
 
@@ -194,11 +272,9 @@ bool AVLTree::insert(AVLNode *current, const KeyType &key, ValueType &value) {
 			}
 
 			if (uniqueInsert) {
-				size_t lh = current->left ? current->left->height : -1;
-				size_t rh = current->right ? current->right->height : -1;
-				current->height = max(lh + 1, rh + 1);
+				current->height = current->getHeight();
 
-
+				
 			}
 
 			return uniqueInsert;
