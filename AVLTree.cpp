@@ -81,19 +81,30 @@ bool AVLTree::removeNode(AVLNode *&current) {
 
 bool AVLTree::remove(const KeyType &key) {
 	bool nodeRemoved = this->remove(this->root, key);
-	if (nodeRemoved) {--this->length;}
+	if (nodeRemoved) {
+		--this->length;
+		this->balanceNode(nullptr, Direction::NONE);
+	}
 	return nodeRemoved;
 }
 
 bool AVLTree::remove(AVLNode *&current, KeyType key) {
 	if (current) {
+		bool nodeRemoved;
+		Direction whichChild = Direction::NONE;
+
 		if (current->key < key) {
-			return this->remove(current->left, key);
+			nodeRemoved = this->remove(current->left, key);
+			whichChild = Direction::LEFT;
 		} else if (current->key > key) {
-			return this->remove(current->right, key);
+			nodeRemoved = this->remove(current->right, key);
+			whichChild = Direction::RIGHT;
 		} else {
 			return this->removeNode(current);
 		}
+
+		if (nodeRemoved) {this->balanceNode(current, whichChild);}
+		return nodeRemoved;
 	} else {
 		return false;
 	}
@@ -108,7 +119,7 @@ bool AVLTree::remove(AVLNode *&current, KeyType key) {
  *	greater than 1. If so, this node is the parent node of one of the
  *	children whose height is greatly unbalanced.
  */
-void AVLTree::balanceNode(AVLNode *&node, AVLTree::Direction &childDir) {
+void AVLTree::balanceNode(AVLNode *node, const AVLTree::Direction &childDir) {
 	if (node) {node->height = node->getHeight();}
 	AVLNode *child = node ? (
 		(childDir == Direction::LEFT) ? node->left :
@@ -119,7 +130,7 @@ void AVLTree::balanceNode(AVLNode *&node, AVLTree::Direction &childDir) {
 	) : this->root;
 
 	if (child) {
-		AVLNode *grandChild;
+		AVLNode *grandChild = nullptr;
 
 		if (child->getBalance() > Direction::LEFT) {
 			grandChild = child->left;
@@ -139,7 +150,7 @@ void AVLTree::balanceNode(AVLNode *&node, AVLTree::Direction &childDir) {
 
 		if (grandChild) {grandChild->height = grandChild->getHeight();}
 		child->height = child->getHeight();
-		node->height = node->getHeight();
+		if (node) {node->height = node->getHeight();}
 		return;
 	}
 }
@@ -268,7 +279,10 @@ bool AVLTree::contains(const AVLNode *current, const KeyType &key) const {
  */
 bool AVLTree::insert(const KeyType &key, ValueType value) {
 	bool uniqueInsert = this->insert(this->root, key, value);
-	if (uniqueInsert) {++this->length;}
+	if (uniqueInsert) {
+		++this->length;
+		this->balanceNode(nullptr, Direction::NONE);
+	}
 	return uniqueInsert;
 }
 
@@ -290,10 +304,12 @@ bool AVLTree::insert(AVLNode *current, const KeyType &key, ValueType &value) {
 			return false;
 		} else {
 			bool uniqueInsert;
+			Direction whichChild = Direction::NONE;
 
 			if (current->key < key) {
 				if (current->left) {
 					uniqueInsert = this->insert(current->left, key, value);
+					whichChild = Direction::LEFT;
 				} else {
 					current->left = new AVLNode(key, value);
 					uniqueInsert = true;
@@ -301,18 +317,14 @@ bool AVLTree::insert(AVLNode *current, const KeyType &key, ValueType &value) {
 			} else {
 				if (current->right) {
 					uniqueInsert = this->insert(current->right, key, value);
+					whichChild = Direction::RIGHT;
 				} else {
 					current->right = new AVLNode(key, value);
 					uniqueInsert = true;
 				}
 			}
 
-			if (uniqueInsert) {
-				current->height = current->getHeight();
-
-				
-			}
-
+			if (uniqueInsert) {this->balanceNode(current, whichChild);}
 			return uniqueInsert;
 		}
 	} else {

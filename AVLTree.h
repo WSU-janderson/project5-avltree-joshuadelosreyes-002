@@ -118,7 +118,7 @@ class AVLTree {
 		static void printDepth(std::ostream &os, const AVLNode *node, const size_t depth);
 		friend std::ostream & operator<<(std::ostream &os, const AVLNode *node);
 
-		void balanceNode(AVLNode *&node, Direction &childDir);
+		void balanceNode(AVLNode *node, const Direction &childDir);
 
 		friend constexpr ssize_t operator<=>(const ssize_t x, const Direction y) {
 			return x - static_cast<ssize_t>(y);
