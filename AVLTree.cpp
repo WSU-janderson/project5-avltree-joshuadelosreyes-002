@@ -150,14 +150,32 @@ void AVLTree::balanceNode(AVLNode *&node, AVLTree::Direction &childDir) {
  *	is rotated to the left.
  */
 void AVLTree::AVLNode::rotateLeft(const AVLTree::Direction &childDir) {
-
+	AVLNode *temp;
+	switch (childDir) {
+		case Direction::LEFT: {
+			temp = this->left;
+			this->left = temp->right;
+			temp->right = this->left->left;
+			this->left->left = temp;
+			return;
+		} case Direction::RIGHT: {
+			temp = this->right;
+			this->right = temp->right;
+			temp->right = this->right->left;
+			this->right->left = temp;
+			return;
+		} default: {return;}
+	}
 }
 
 /**
  *	Rotate the root node to the left.
  */
 void AVLTree::rotateLeft() {
-
+	AVLNode *temp = this->root;
+	this->root = temp->right;
+	temp->right = this->root->left;
+	this->root->left = temp;
 }
 
 /**
@@ -166,14 +184,32 @@ void AVLTree::rotateLeft() {
  *	is rotated to the right.
  */
 void AVLTree::AVLNode::rotateRight(const AVLTree::Direction &childDir) {
-
+	AVLNode *temp;
+	switch (childDir) {
+		case Direction::LEFT: {
+			temp = this->left;
+			this->left = temp->left;
+			temp->left = this->left->right;
+			this->left->right = temp;
+			return;
+		} case Direction::RIGHT: {
+			temp = this->right;
+			this->right = temp->left;
+			temp->left = this->right->right;
+			this->right->right = temp;
+			return;
+		} default: {return;}
+	}
 }
 
 /**
  *	Rotate the root node to the right.
  */
 void AVLTree::rotateRight() {
-
+	AVLNode *temp = this->root;
+	this->root = temp->left;
+	temp->left = this->root->right;
+	this->root->right = temp;
 }
 
 /** Creates an empty AVL tree. */
