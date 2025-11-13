@@ -107,6 +107,8 @@ class AVLTree {
 		void grabKey(std::vector<KeyType> &keyList, const AVLNode *current) const;
 		void grabValue(std::vector<ValueType> &valueList, const AVLNode *current, const KeyType &low, const KeyType &high) const;
 
+		void insert(AVLNode *&current, const AVLNode *other);
+
 		/* Helper methods for remove. */
 
 		/** This overloaded remove will do the recursion to remove the node. */

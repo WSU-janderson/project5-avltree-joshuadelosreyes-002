@@ -227,6 +227,35 @@ void AVLTree::rotateRight() {
 AVLTree::AVLTree() : root(nullptr), length(0) {}
 
 /**
+ *	Create a copy of another AVL tree.
+ *
+ *	Because a tree has pointers to other nodes, given each node must be
+ *	independent from each other, copying another AVL tree requires a deep
+ *	copy.
+ *
+ *	This copy traverses all the nodes in the `other` tree using pre-order
+ *	traversal, and creates new nodes based on the key-value pairs of the
+ *	`other` tree.
+ */
+AVLTree::AVLTree(const AVLTree &other) {
+	this->length = other.length;
+	this->insert(this->root, other.root);
+}
+
+/**
+ *	Recursive helper method to traverse the other tree's nodes to make
+ *	copies of these nodes that are independent of each other.
+ */
+void AVLTree::insert(AVLNode *&current, const AVLNode *other) {
+	if (other) {
+		current = new AVLNode(other->key, other->value);
+		this->insert(current->left, other->left);
+		this->insert(current->right, other->right);
+	}
+	return;
+}
+
+/**
  *	Creates a node, loaded with a key-value pair.
  *	New nodes are allocated as leaf nodes, which they have no children.
  */
