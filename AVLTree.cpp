@@ -281,6 +281,17 @@ void AVLTree::remove(AVLNode *&current) {
 }
 
 /**
+ *	Assign a copy of the `other` AVL tree to this AVL tree.
+ *	Before deep copying the `other` tree's nodes, all the current nodes
+ *	must be removed.
+ */
+void AVLTree::operator=(const AVLTree &other) {
+	this->remove(this->root);
+	this->length = other.length;
+	this->insert(this->root, other.root);
+}
+
+/**
  *	Creates a node, loaded with a key-value pair.
  *	New nodes are allocated as leaf nodes, which they have no children.
  */
