@@ -108,6 +108,7 @@ class AVLTree {
 		void grabValue(std::vector<ValueType> &valueList, const AVLNode *current, const KeyType &low, const KeyType &high) const;
 
 		void insert(AVLNode *&current, const AVLNode *other);
+		void remove(AVLNode *&current);
 
 		/* Helper methods for remove. */
 

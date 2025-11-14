@@ -243,6 +243,16 @@ AVLTree::AVLTree(const AVLTree &other) {
 }
 
 /**
+ *	Upon deletion, removes all nodes of the AVL tree.
+ *
+ *	The removal of all nodes uses post-order traversal so that all child
+ *	nodes are deleted until the target node.
+ */
+AVLTree::~AVLTree() {
+	this->remove(this->root);
+}
+
+/**
  *	Recursive helper method to traverse the other tree's nodes to make
  *	copies of these nodes that are independent of each other.
  */
@@ -251,7 +261,22 @@ void AVLTree::insert(AVLNode *&current, const AVLNode *other) {
 		current = new AVLNode(other->key, other->value);
 		this->insert(current->left, other->left);
 		this->insert(current->right, other->right);
+		current->height = current->getHeight();
 	}
+	return;
+}
+
+/**
+ *	Recursive helper method to traverse the nodes of the AVL tree
+ *	by deleting all the node's children before the current node.
+ */
+void AVLTree::remove(AVLNode *&current) {
+	if (current) {
+		this->remove(current->left);
+		this->remove(current->right);
+		delete current;
+	}
+	current = nullptr;
 	return;
 }
 
