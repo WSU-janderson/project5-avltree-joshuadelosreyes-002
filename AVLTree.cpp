@@ -1,3 +1,7 @@
+/**
+ *	AVLTree.cpp
+ */
+
 #include "AVLTree.h"
 
 size_t AVLTree::AVLNode::numChildren() const {
@@ -66,10 +70,10 @@ bool AVLTree::removeNode(AVLNode *&current) {
 			ValueType newValue = minRight->value;
 			bool nodeRemoved = this->remove(this->root, newKey); // Delete this one.
 
+			/**	The height of this node may be properly updated when returning back
+			 *	from rebalancing after deleting the other node. */
 			current->key = newKey;
 			current->value = newValue;
-
-			current->height = current->getHeight();
 
 			return nodeRemoved;
 		}
@@ -93,10 +97,10 @@ bool AVLTree::remove(AVLNode *&current, KeyType key) {
 		bool nodeRemoved;
 		Direction whichChild = Direction::NONE;
 
-		if (current->key < key) {
+		if (key < current->key) {
 			nodeRemoved = this->remove(current->left, key);
 			whichChild = Direction::LEFT;
-		} else if (current->key > key) {
+		} else if (key > current->key) {
 			nodeRemoved = this->remove(current->right, key);
 			whichChild = Direction::RIGHT;
 		} else {
@@ -124,35 +128,65 @@ void AVLTree::balanceNode(AVLNode *node, const AVLTree::Direction &childDir) {
 	AVLNode *child = node ? (
 		(childDir == Direction::LEFT) ? node->left :
 		(childDir == Direction::RIGHT) ? node->right : (
-			!node->left ? node->right :
-			!node->right ? node->left : nullptr
+			!(node->left) ? node->right :
+			!(node->right) ? node->left : nullptr
 		)
 	) : this->root;
 
 	if (child) {
 		AVLNode *grandChild = nullptr;
+		size_t rotations = 0;
 
 		if (child->getBalance() > Direction::LEFT) {
+			++rotations;
 			grandChild = child->left;
 			if (grandChild->getBalance() < Direction::LEFT) {
+				++rotations;
 				child->rotateLeft(Direction::LEFT);
+			} if (node) {
+				node->rotateRight(Direction::LEFT);
+			} else {
+				this->rotateRight();
 			}
-			if (node) {node->rotateRight(Direction::LEFT);}
-			else {this->rotateRight();}
 		} else if (child->getBalance() < Direction::RIGHT) {
+			++rotations;
 			grandChild = child->right;
 			if (grandChild->getBalance() > Direction::RIGHT) {
+				++rotations;
 				child->rotateRight(Direction::RIGHT);
-			}
-			if (node) {node->rotateLeft(Direction::RIGHT);}
-			else {this->rotateLeft();}
+			} if (node) {
+				node->rotateLeft(Direction::RIGHT);
+			} else {this->rotateLeft();}
 		}
 
-		if (grandChild) {grandChild->height = grandChild->getHeight();}
-		child->height = child->getHeight();
-		if (node) {node->height = node->getHeight();}
-		return;
+		/**
+		 *	Other child nodes that are carried by nodes affected by rotations do not
+		 *	need to change heights.
+		 *
+		 *	However, if rotations occur, after these rotations, height adjustments
+		 *	occur at the deepest affected nodes first.
+		 */
+		switch (rotations) {
+			case 0: {
+				if (grandChild) {grandChild->height = grandChild->getHeight();}
+				child->height = child->getHeight();
+				if (node) {node->height = node->getHeight();}
+				break;
+			} case 1: {
+				if (node) {node->height = node->getHeight();}
+				if (grandChild) {grandChild->height = grandChild->getHeight();}
+				child->height = child->getHeight();
+				break;
+			} case 2: {
+				if (node) {node->height = node->getHeight();}
+				child->height = child->getHeight();
+				if (grandChild) {grandChild->height = grandChild->getHeight();}
+				break;
+			}
+		}
 	}
+
+	return;
 }
 
 /**
@@ -322,9 +356,9 @@ bool AVLTree::contains(const KeyType &key) const {
  */
 bool AVLTree::contains(const AVLNode *current, const KeyType &key) const {
 	if (current) {
-		if (current->key < key) {
+		if (key < current->key) {
 			return this->contains(current->left, key);
-		} else if (current->key > key) {
+		} else if (key > current->key) {
 			return this->contains(current->right, key);
 		} else {
 			return true;
@@ -364,14 +398,14 @@ bool AVLTree::insert(const KeyType &key, ValueType value) {
  */
 bool AVLTree::insert(AVLNode *current, const KeyType &key, ValueType &value) {
 	if (current) {
-		if (current->key == key) {
+		if (key == current->key) {
 			current->value = value;
 			return false;
 		} else {
 			bool uniqueInsert;
 			Direction whichChild = Direction::NONE;
 
-			if (current->key < key) {
+			if (key < current->key) {
 				if (current->left) {
 					uniqueInsert = this->insert(current->left, key, value);
 					whichChild = Direction::LEFT;
@@ -458,9 +492,9 @@ std::optional<AVLTree::ValueType> AVLTree::get(const KeyType &key) const {
  */
 std::optional<AVLTree::ValueType> AVLTree::get(const AVLNode *current, const KeyType &key) const {
 	if (current) {
-		if (current->key < key) {
+		if (key < current->key) {
 			return this->get(current->left, key);
-		} else if (current->key > key) {
+		} else if (key > current->key) {
 			return this->get(current->right, key);
 		} else {
 			return std::optional{current->value};
@@ -490,9 +524,9 @@ AVLTree::ValueType & AVLTree::operator[](const KeyType &key) {
  */
 AVLTree::ValueType & AVLTree::getValue(AVLNode *current, const KeyType &key) {
 	if (current) {
-		if (current->key < key) {
+		if (key < current->key) {
 			return this->getValue(current->left, key);
-		} else if (current->key > key) {
+		} else if (key > current->key) {
 			return this->getValue(current->right, key);
 		} else {
 			ValueType &valueOf = current->value;
@@ -559,15 +593,11 @@ void AVLTree::grabValue(
 ) const {
 	if (current) {
 		if (current->left) {
-			if (current->left->key >= low) {
-				this->grabValue(valueList, current->left, low, high);
-			}
-		}
-		insertValue(valueList, current->value);
-		if (current->right) {
-			if (current->right->key <= high) {
-				this->grabValue(valueList, current->right, low, high);
-			}
+			this->grabValue(valueList, current->left, low, high);
+		} if ((low <= current->key) && (current->key <= high)) {
+			insertValue(valueList, current->value);
+		} if (current->right) {
+			this->grabValue(valueList, current->right, low, high);
 		}
 	}
 	return;

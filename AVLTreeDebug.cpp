@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define RUN_TEST 0
+#define RUN_TEST 1
 
 int main() {
 #if defined(RUN_TEST) && (RUN_TEST != 0)
@@ -56,7 +56,7 @@ int main() {
 	containsResult = tree.contains("N"); // Expected false
 
 	// get
-	optional<int> getResult;
+	optional<size_t> getResult;
 
 	getResult = tree.get("A"); // Expected 65
 	cout << "A: " << getResult.value() << endl;
@@ -69,9 +69,9 @@ int main() {
 	cout << endl;
 
 	// findRange
-	vector<int> rangeTest = tree.findRange("D", "W");
+	vector<size_t> rangeTest = tree.findRange("D", "W");
 	// 70 68 82 75 77 86
-	for (auto val: rangeTest) {
+	for (auto val : rangeTest) {
 		cout << val << " ";
 	}
 	cout << endl << endl;
@@ -83,7 +83,7 @@ int main() {
 
 	// remove
 	bool removeResult;
-	removeResult= tree.remove("A"); // "A" is a leaf.
+	removeResult = tree.remove("A"); // "A" is a leaf.
 	cout << endl << endl;
 	cout << tree << endl;
 
