@@ -1,5 +1,7 @@
 /**
  *	AVLTree.cpp
+ *
+ *	Contains all method definitions that are declared in the respective h file.
  */
 
 #include "AVLTree.h"
@@ -83,6 +85,14 @@ bool AVLTree::removeNode(AVLNode *&current) {
 	return true;
 }
 
+/**
+ *	If `key` exists in the tree, that key-value pair is removed.
+ *	This returns `true` if that pair is successfully removed.
+ *	Otherwise, the `key` doesn't exist in the tree, then the
+ *	tree won't be modified, and this returns `false`.
+ *
+ *	Expected time complexity is `O(log(n))`.
+ */
 bool AVLTree::remove(const KeyType &key) {
 	bool nodeRemoved = this->remove(this->root, key);
 	if (nodeRemoved) {
@@ -434,6 +444,8 @@ bool AVLTree::insert(AVLNode *current, const KeyType &key, ValueType &value) {
 /**
  *	Returns the height of the tree.
  *	If the tree is empty, its height is `-1`.
+ *
+ *	Expected time complexity is `O(1)`.
  */
 size_t AVLTree::getHeight() const {
 	if (this->root) {

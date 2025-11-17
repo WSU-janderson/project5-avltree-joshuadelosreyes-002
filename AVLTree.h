@@ -123,6 +123,18 @@ class AVLTree {
 
 		void balanceNode(AVLNode *node, const Direction &childDir);
 
+		/**
+		 *	@brief Compare a number (denoted as height balance) to a direction that
+		 *	corresponds to another number.
+		 *
+		 *	Height balances are calculated as the difference between the left child's
+		 *	height and the right child's height.
+		 *
+		 *	The comparison is performed on two different number types, `ssize_t` and
+		 *	the `Direction` enumerator.
+		 *
+		 *	@return A negative integer if `x < y`; `0` if `x == y`; or a positive integer if `x > y`.
+		 */
 		friend constexpr ssize_t operator<=>(const ssize_t x, const Direction y) {
 			return x - static_cast<ssize_t>(y);
 		}

@@ -12,6 +12,8 @@
 using namespace std;
 
 #define RUN_TEST 1
+#define COPY_TEST 0
+#define MEMLEAK_TEST 0
 
 int main() {
 #if defined(RUN_TEST) && (RUN_TEST != 0)
@@ -100,7 +102,15 @@ int main() {
 	removeResult = tree.remove("Z"); // double rotate right
 	cout << endl << endl;
 	cout << tree << endl;
-#endif
+#endif // RUN_TEST
+
+#if defined(COPY_TEST) && (COPY_TEST != 0)
+
+#endif // COPY_TEST
+
+#if defined(MEMLEAK_TEST) && (MEMLEAK_TEST != 0)
+
+#endif // MEMLEAK_TEST
 
 	return 0;
 }
