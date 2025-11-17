@@ -102,15 +102,48 @@ int main() {
 	removeResult = tree.remove("Z"); // double rotate right
 	cout << endl << endl;
 	cout << tree << endl;
-#endif // RUN_TEST
 
 #if defined(COPY_TEST) && (COPY_TEST != 0)
+	AVLTree tree2(tree);
 
+	cout << "tree:\n" << tree << "\n";
+	cout << "tree2:\n" << tree2 << "\n";
+
+	tree2.insert("AA", 720);
+	tree2.insert("AB", 730);
+	tree2.insert("BA", 210);
+	tree2.insert("BB", 350);
+
+	cout << "tree:\n" << tree << "\n";
+	cout << "tree2:\n" << tree2 << "\n";
+
+	tree = tree2;
+
+	tree.remove("BB");
+	tree.remove("BA");
+
+	cout << "tree:\n" << tree << "\n";
+	cout << "tree2:\n" << tree2 << "\n";
 #endif // COPY_TEST
 
 #if defined(MEMLEAK_TEST) && (MEMLEAK_TEST != 0)
+	{
+		AVLTree tree3;
+		char key[4];
+		for (key[0] = 'A'; key[0] <= 'Z'; ++key[0]) {
+			for (key[1] = 'A'; key[1] <= 'Z'; ++key[1]) {
+				for (key[2] = 'A'; key[2] <= 'Z'; ++key[2]) {
+					for (key[3] = 'A'; key[3] <= 'Z'; ++key[3]) {
+						tree3.insert(std::string{key}, key[0] + key[1] + key[2] + key[3]);
+					}
+				}
+			}
+		}
 
+		cout << tree3.size() << "\n";
+	}
 #endif // MEMLEAK_TEST
+#endif // RUN_TEST
 
 	return 0;
 }
