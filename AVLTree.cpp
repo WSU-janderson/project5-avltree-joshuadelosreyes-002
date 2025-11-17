@@ -124,7 +124,6 @@ bool AVLTree::remove(AVLNode *&current, KeyType key) {
  *	children whose height is greatly unbalanced.
  */
 void AVLTree::balanceNode(AVLNode *node, const AVLTree::Direction &childDir) {
-	if (node) {node->height = node->getHeight();}
 	AVLNode *child = node ? (
 		(childDir == Direction::LEFT) ? node->left :
 		(childDir == Direction::RIGHT) ? node->right : (
@@ -135,13 +134,10 @@ void AVLTree::balanceNode(AVLNode *node, const AVLTree::Direction &childDir) {
 
 	if (child) {
 		AVLNode *grandChild = nullptr;
-		size_t rotations = 0;
 
 		if (child->getBalance() > Direction::LEFT) {
-			++rotations;
 			grandChild = child->left;
 			if (grandChild->getBalance() < Direction::LEFT) {
-				++rotations;
 				child->rotateLeft(Direction::LEFT);
 			} if (node) {
 				node->rotateRight(Direction::LEFT);
@@ -149,41 +145,41 @@ void AVLTree::balanceNode(AVLNode *node, const AVLTree::Direction &childDir) {
 				this->rotateRight();
 			}
 		} else if (child->getBalance() < Direction::RIGHT) {
-			++rotations;
 			grandChild = child->right;
 			if (grandChild->getBalance() > Direction::RIGHT) {
-				++rotations;
 				child->rotateRight(Direction::RIGHT);
 			} if (node) {
 				node->rotateLeft(Direction::RIGHT);
-			} else {this->rotateLeft();}
+			} else {
+				this->rotateLeft();
+			}
 		}
 
 		/**
-		 *	Other child nodes that are carried by nodes affected by rotations do not
-		 *	need to change heights.
+		 *	If any rotation occurs, the resulting position of the rotated nodes
+		 *	consist of the parent node's selected child and their two adjacent
+		 *	children.
 		 *
-		 *	However, if rotations occur, after these rotations, height adjustments
-		 *	occur at the deepest affected nodes first.
+		 *	But the parent node's child may be a different node, which
+		 *	requires resolving the pointer.
 		 */
-		switch (rotations) {
-			case 0: {
-				if (grandChild) {grandChild->height = grandChild->getHeight();}
-				child->height = child->getHeight();
-				if (node) {node->height = node->getHeight();}
-				break;
-			} case 1: {
-				if (node) {node->height = node->getHeight();}
-				if (grandChild) {grandChild->height = grandChild->getHeight();}
-				child->height = child->getHeight();
-				break;
-			} case 2: {
-				if (node) {node->height = node->getHeight();}
-				child->height = child->getHeight();
-				if (grandChild) {grandChild->height = grandChild->getHeight();}
-				break;
-			}
+		{
+			child = node ? (
+				(childDir == Direction::LEFT) ? node->left :
+				(childDir == Direction::RIGHT) ? node->right : (
+					!(node->left) ? node->right :
+					!(node->right) ? node->left : nullptr
+				)
+			) : this->root;
+
+			if (child->left) {child->left->height = child->left->getHeight();}
+			if (child->right) {child->right->height = child->right->getHeight();}
+			if (child) {child->height = child->getHeight();}
+			if (node) {node->height = node->getHeight();}
 		}
+	} else {
+		if (child) {child->height = child->getHeight();}
+		if (node) {node->height = node->getHeight();}
 	}
 
 	return;
